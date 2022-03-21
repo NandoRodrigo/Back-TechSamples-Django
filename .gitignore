@@ -1,2 +1,7 @@
-venv/
-*pyc
+venv
+.vscode
+**__pycache__/
+pagar_me/__pycache__/
+/venv
+*.pyc
+*.sqlite3
