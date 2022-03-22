@@ -1,22 +1,25 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
-from tech_samples.permissions import IsUserCreationOrList, IsUserUpdatePassword
+from tech_samples.permissions import IsAdmin, IsUserUpdatePassword
 
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
 
+class AdminSignupView(CreateAPIView):
+  queryset = User.objects.all()
+  serializer_class = UserSerializer
 
-class UsersView(ListCreateAPIView):
+class AnalystSignupView(ListCreateAPIView):
   queryset = User.objects.all()
   serializer_class = UserSerializer
 
   authentication_classes = [TokenAuthentication]
-  permission_classes = [IsUserCreationOrList]
+  permission_classes = [IsAdmin]
 
 
 class UpdatePasswordView(RetrieveUpdateAPIView):

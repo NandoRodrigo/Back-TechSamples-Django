@@ -24,7 +24,6 @@ class IsUserCreationOrList(BasePermission):
     
 class IsUserUpdatePassword(BasePermission):
   def has_permission(self, request, view):
-    print(request.user.uuid)
     
     if str(request.user.uuid) in request.META['PATH_INFO']:
       return True
