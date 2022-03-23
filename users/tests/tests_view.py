@@ -56,7 +56,7 @@ class UserViewTest(APITestCase):
 
     self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
 
-    response = self.client.get('/api/admin/analyst')
+    response = self.client.get('/api/admin/analyst/')
 
     self.assertEqual(response.status_code, 200)
     self.assertEqual(len(response.json()), 2)
@@ -67,7 +67,7 @@ class UserViewTest(APITestCase):
 
     self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
 
-    response = self.client.get('/api/admin/analyst')
+    response = self.client.get('/api/admin/analyst/')
 
     self.assertEqual(response.status_code, 403)
 
@@ -85,7 +85,7 @@ class UserViewTest(APITestCase):
 
     self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
 
-    response = self.client.post('/api/admin/analyst', self.analyst)
+    response = self.client.post('/api/admin/analyst/', self.analyst)
 
     self.assertEqual(response.status_code, 403)
 
