@@ -6,7 +6,7 @@ from users.serializers import UserSerializer
 
 class ClassSerializer(serializers.ModelSerializer):
   
-  admin = UserSerializer(read_only=True)
+  admin = serializers.EmailField(read_only=True)
   
   class Meta:
     model = Class
