@@ -27,3 +27,10 @@ class IsUserUpdatePassword(BasePermission):
     
     if str(request.user.uuid) in request.META['PATH_INFO']:
       return True
+
+class IsAdminOrReadOnly(BasePermission):
+  def has_permission(self, request, view):
+    if request.method in SAFE_METHODS:
+      return True
+
+    return request.user.is_admin
