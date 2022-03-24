@@ -3,9 +3,7 @@ from django.forms import ValidationError
 
 from class_types.serializers import TypeReadSerializer
 
-
 from .models import Class
-from users.serializers import UserSerializer
 
 class ClassSerializer(serializers.ModelSerializer):
   
@@ -21,9 +19,7 @@ class ClassSerializer(serializers.ModelSerializer):
         'stock': {'read_only': True},
         'types': {'read_only': True}
     }
-    
-    # depth = 1
-    
+        
   def validate(self, data):
     if hasattr(self, 'initial_data'):
       unknown_keys = set(self.initial_data.keys()) - set(self.fields.keys())

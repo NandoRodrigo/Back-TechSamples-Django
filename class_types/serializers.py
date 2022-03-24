@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from django.forms import ValidationError
 
-# from classes.serializers import ClassSerializer
-
 from .models import Type
 from classes.models import Class
 
@@ -32,14 +30,11 @@ class TypeSerializer(serializers.ModelSerializer):
     return Type.objects.create(**validated_data, class_type=getClass)
   
   def update(self, instance, validated_data):
-    # validated_data['class_type'] = self.context['request'].user
     return super().update(instance, validated_data)
   
   
 class TypeReadSerializer(serializers.ModelSerializer):
-  
-  # class_type = ClassSerializer(read_only=True, many=True)
-  
+    
   class Meta:
     model = Type
     fields = ['uuid','name']

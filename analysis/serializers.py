@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.forms import ValidationError
-import json
 
 from classes.serializers import ClassSerializer
 
