@@ -20,6 +20,7 @@ class AnalysisSerializer(serializers.ModelSerializer):
         'class_id': {'write_only': True}
     }
 
+    depth = 1
     
   def validate(self, data):
     if hasattr(self, 'initial_data'):
