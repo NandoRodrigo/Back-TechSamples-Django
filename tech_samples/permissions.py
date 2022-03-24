@@ -9,7 +9,7 @@ class IsAdmin(BasePermission):
 
 class IsAnalyst(BasePermission):
   def has_permission(self, request, view):
-    if request.method in SAFE_METHODS:
+    if request.method in SAFE_METHODS and request.user.is_authenticated:
       return True
 
     return bool(request.user.is_authenticated and not
