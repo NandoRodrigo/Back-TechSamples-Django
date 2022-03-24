@@ -1,5 +1,3 @@
-import json
-from django.http import JsonResponse
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
@@ -43,6 +41,5 @@ class AnalysisViewTest(APITestCase):
     self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
     
     response = self.client.post('/api/analysis/', self.new_analysis)
-    print(response.json())
     
     self.assertEqual(response.status_code, 201)
