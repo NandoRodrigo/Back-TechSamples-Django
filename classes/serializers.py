@@ -7,6 +7,7 @@ from users.serializers import UserSerializer
 class ClassSerializer(serializers.ModelSerializer):
   
   admin = serializers.EmailField(read_only=True)
+  # types = serializers.PrimaryKeyRelatedField(read_only=True)
   
   class Meta:
     model = Class
@@ -14,8 +15,9 @@ class ClassSerializer(serializers.ModelSerializer):
     
     extra_kwargs = {
         'admin': {'read_only': True},
-        'stock': {'read_only': True}
+        'stock': {'read_only': True},
     }
+    
     
   def validate(self, data):
     if hasattr(self, 'initial_data'):

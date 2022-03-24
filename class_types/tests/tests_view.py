@@ -5,7 +5,7 @@ from classes.models import Class
 from users.models import User
 from class_types.models import Type
 
-class FeeViewTest(APITestCase):
+class TypeViewTest(APITestCase):
   def setUp(self) -> None:
     self.user_admin = User.objects.create_user(
         email='admin@gmail.com',
