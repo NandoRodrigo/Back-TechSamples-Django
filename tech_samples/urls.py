@@ -22,7 +22,7 @@ urlpatterns = [
     path('api/', include('class_types.urls')),
     path('api/', include('classes.urls')),
     # path('api/', include('consumables.urls')),
-    # path('api/', include('parameters.urls')),
+    path('api/', include('parameters.urls')),
     path('api/', include('stock.urls')),
     path('api/', include('users.urls')),
 ]
