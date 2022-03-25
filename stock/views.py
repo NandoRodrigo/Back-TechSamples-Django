@@ -3,7 +3,6 @@ from rest_framework.generics import ListCreateAPIView
 
 from rest_framework.authentication import TokenAuthentication
 from tech_samples.permissions import IsAdmin
-from users.models import User
 from .models import Stock
 from .serializers import StockSerializer, StockListSerializer
 

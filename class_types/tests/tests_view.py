@@ -30,7 +30,7 @@ class FeeViewTest(APITestCase):
 
     self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
     
-    response = self.client.post(f'/api/classes/{self.new_class.uuid}/types', self.new_type)
+    response = self.client.post(f'/api/classes/{self.new_class.uuid}/types/', self.new_type)
     
     self.assertEqual(response.status_code, 201)
     self.assertEqual(response.json()['class_type']['uuid'], str(self.new_class.uuid))
@@ -49,8 +49,7 @@ class FeeViewTest(APITestCase):
 
     self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
     
-    response = self.client.patch(f'/api/classes/types/{self.new_type.uuid}', self.toUpdate)
-    print(response.json())
+    response = self.client.patch(f'/api/classes/types/{self.new_type.uuid}/', self.toUpdate)
     
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.json()['name'], self.toUpdate['name'])
