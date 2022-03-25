@@ -33,7 +33,7 @@ class TypeViewTest(APITestCase):
     response = self.client.post(f'/api/classes/{self.new_class.uuid}/types/', self.new_type)
     
     self.assertEqual(response.status_code, 201)
-    self.assertEqual(response.json()['class_type'], str(self.new_class.uuid))
+    self.assertEqual(response.json()['class_type'], self.new_class.name)
     
   def test_update_type_name(self):
     self.new_type = Type.objects.create(
