@@ -44,7 +44,7 @@ class FeeViewTest(APITestCase):
     self.assertEqual(response.status_code, 201)
     self.assertEqual(response.json()['type']['uuid'], str(self.new_type.uuid))
     
-  def test_delete_type_name(self):
+  def test_delete_parameter(self):
     self.new_parameter = Parameter.objects.create(
       name = "teor de sódio",
 		  unit = "%",
