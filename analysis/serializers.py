@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.forms import ValidationError
 
 from classes.serializers import ClassSerializer
+from tech_samples.exceptions import InvalidParameterName, InvalidTypeName
 
 from .models import Analysis
 from classes.models import Class
@@ -40,3 +41,30 @@ class AnalysisSerializer(serializers.ModelSerializer):
     
     return Analysis.objects.create(**validated_data, analyst=self.context['request'].user)
     
+  def update(self, instance, validated_data):
+    analysis = Analysis.objects.get(uuid = instance.uuid)
+    
+    analysis_json = AnalysisSerializer(analysis).data
+    body = validated_data['class_data']
+    
+    for types in analysis_json['class_data']['types']:
+      if types['name'] == body['type_name']:
+        for parameter in types['parameters']:
+          if parameter['name'] == body['parameter_name']:
+            parameter['result'] = body['result']
+          else:
+            raise InvalidParameterName()
+    analysis.save()
+    
+    
+    # Mudando o is_concluded
+    for types in analysis_json['class_data']['types']:
+      for parameters in types['parameters']:
+          if parameters['result'] != None:
+            analysis.is_concluded = True
+          else:
+            analysis.is_concluded = False
+    analysis.save()
+    
+    return analysis
+    # return super().update(instance, validated_data)

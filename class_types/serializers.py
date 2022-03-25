@@ -4,16 +4,20 @@ from django.forms import ValidationError
 from .models import Type
 from classes.models import Class
 
+from parameters.serializers import ParameterReadSerializer
+
 class TypeSerializer(serializers.ModelSerializer):
   
   class_type = serializers.SlugRelatedField(read_only=True, slug_field='name')
+  
   
   class Meta:
     model = Type
     fields = '__all__'
     
     extra_kwargs = {
-        'class_type': {'read_only': True}
+        'class_type': {'read_only': True},
+        'parameters': {'read_only': True}
     }
     
     
@@ -34,7 +38,9 @@ class TypeSerializer(serializers.ModelSerializer):
   
   
 class TypeReadSerializer(serializers.ModelSerializer):
+  
+  parameters = ParameterReadSerializer(read_only=True, many=True)
     
   class Meta:
     model = Type
-    fields = ['uuid','name']
+    fields = ['uuid','name', 'parameters']
