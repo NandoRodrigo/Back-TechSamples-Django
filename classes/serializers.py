@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from django.forms import ValidationError
 
+from class_types.serializers import TypeReadSerializer
+
 from .models import Class
-from users.serializers import UserSerializer
 
 class ClassSerializer(serializers.ModelSerializer):
   
   admin = serializers.EmailField(read_only=True)
+  types = TypeReadSerializer(read_only=True, many=True)
   
   class Meta:
     model = Class
@@ -14,9 +16,10 @@ class ClassSerializer(serializers.ModelSerializer):
     
     extra_kwargs = {
         'admin': {'read_only': True},
-        'stock': {'read_only': True}
+        'stock': {'read_only': True},
+        'types': {'read_only': True}
     }
-    
+        
   def validate(self, data):
     if hasattr(self, 'initial_data'):
       unknown_keys = set(self.initial_data.keys()) - set(self.fields.keys())
