@@ -1,3 +1,4 @@
+from genericpath import exists
 from rest_framework import serializers
 from django.forms import ValidationError
 
@@ -44,21 +45,29 @@ class AnalysisSerializer(serializers.ModelSerializer):
   def update(self, instance, validated_data):
     analysis = Analysis.objects.get(uuid = instance.uuid)
     
-    analysis_json = AnalysisSerializer(analysis).data
+    analysis_json = AnalysisSerializer(analysis).data['class_data']
     body = validated_data['class_data']
     
-    for types in analysis_json['class_data']['types']:
+    list_of_types = [values for types in analysis_json['types'] for values in types.values()]
+    list_of_parameters = [
+      values for parameters in analysis_json['types']
+      for parameter in parameters['parameters']
+      for values in parameter.values()
+    ]
+    if body['type_name'] not in list_of_types:
+      raise InvalidTypeName()
+    elif body['parameter_name'] not in list_of_parameters:
+      raise InvalidParameterName()
+  
+    for types in analysis_json['types']:
       if types['name'] == body['type_name']:
         for parameter in types['parameters']:
           if parameter['name'] == body['parameter_name']:
             parameter['result'] = body['result']
-          else:
-            raise InvalidParameterName()
-    analysis.save()
-    
-    
+    analysis.save()  
+      
     # Mudando o is_concluded
-    for types in analysis_json['class_data']['types']:
+    for types in analysis_json['types']:
       for parameters in types['parameters']:
           if parameters['result'] != None:
             analysis.is_concluded = True
@@ -67,4 +76,3 @@ class AnalysisSerializer(serializers.ModelSerializer):
     analysis.save()
     
     return analysis
-    # return super().update(instance, validated_data)
