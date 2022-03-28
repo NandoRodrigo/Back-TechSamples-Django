@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.forms import ValidationError
 
 from classes.serializers import ClassSerializer
-from tech_samples.exceptions import InvalidParameterName, InvalidTypeName
+from tech_samples.exceptions import InvalidParameterName, InvalidResultValue, InvalidTypeName
 
 from .models import Analysis
 from classes.models import Class
@@ -73,6 +73,21 @@ class AnalysisSerializer(serializers.ModelSerializer):
             analysis.is_concluded = True
           else:
             analysis.is_concluded = False
+            analysis.is_approved = False
+            analysis.save()
+            return analysis
     analysis.save()
-    
+    if analysis.is_concluded:
+      for types in analysis_json['types']:
+        for parameters in types['parameters']:
+          try:
+            if int(parameters['result']) <= int(parameters['maximum']) and int(parameters['result']) >= int(parameters['minimum']):
+              analysis.is_approved = True
+            else:
+              analysis.is_approved = False
+              analysis.save()
+              return analysis
+          except:
+            raise InvalidResultValue()
+    analysis.save()
     return analysis

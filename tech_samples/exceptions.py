@@ -15,3 +15,11 @@ class InvalidTypeName(APIException):
           "Invalid type_name"
       ]
   }
+  
+class InvalidResultValue(APIException):
+  status_code = 400
+  default_detail = {
+      "error": [
+          "Invalid value in result: must be a string of number or null "
+      ]
+  }
