@@ -6,6 +6,7 @@ from .models import Parameter
 from .serializers import ParameterSerializer
 
 class ParameterCreateView(CreateAPIView):
+
   queryset = Parameter.objects.all()
   serializer_class = ParameterSerializer
   lookup_url_kwarg = "type_id"
