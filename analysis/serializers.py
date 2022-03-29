@@ -1,9 +1,8 @@
-from genericpath import exists
 from rest_framework import serializers
 from django.forms import ValidationError
 
 from classes.serializers import ClassSerializer
-from tech_samples.exceptions import InvalidParameterName, InvalidResultValue, InvalidTypeName
+from tech_samples.exceptions import InvalidBodyContent, InvalidParameterName, InvalidResultValue, InvalidTypeName
 
 from .models import Analysis
 from classes.models import Class
@@ -46,9 +45,13 @@ class AnalysisSerializer(serializers.ModelSerializer):
     analysis = Analysis.objects.get(uuid = instance.uuid)
     
     analysis_json = AnalysisSerializer(analysis).data['class_data']
+    
+    if 'class_data' not in validated_data:
+      raise InvalidBodyContent()
     body = validated_data['class_data']
     
     list_of_types = [values for types in analysis_json['types'] for values in types.values()]
+    
     list_of_parameters = [
       values for parameters in analysis_json['types']
       for parameter in parameters['parameters']
@@ -64,6 +67,8 @@ class AnalysisSerializer(serializers.ModelSerializer):
         for parameter in types['parameters']:
           if parameter['name'] == body['parameter_name']:
             parameter['result'] = body['result']
+          else:
+            raise InvalidParameterName({"error": f"parameter: {body['parameter_name']} not in type: {types['name']}"})
     analysis.save()  
       
     # Mudando o is_concluded
@@ -77,6 +82,7 @@ class AnalysisSerializer(serializers.ModelSerializer):
             analysis.save()
             return analysis
     analysis.save()
+    
     if analysis.is_concluded:
       for types in analysis_json['types']:
         for parameters in types['parameters']:

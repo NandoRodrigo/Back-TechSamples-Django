@@ -1,4 +1,3 @@
-import json
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.authentication import TokenAuthentication
 from tech_samples.permissions import IsAnalyst

@@ -23,3 +23,11 @@ class InvalidResultValue(APIException):
           "Invalid value in result: must be a string of number or null "
       ]
   }
+  
+class InvalidBodyContent(APIException):
+  status_code = 400
+  default_detail = {
+      "error": [
+          "class_data key not given"
+      ]
+  }
