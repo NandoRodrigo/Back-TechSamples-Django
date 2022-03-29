@@ -27,7 +27,7 @@ class IsUserCreationOrList(BasePermission):
 class IsUserUpdatePassword(BasePermission):
   def has_permission(self, request, view):
     
-    if str(request.user.uuid) in request.META['PATH_INFO']:
+    if str(request.user.uuid) in request.META['PATH_INFO'] and request.user.is_authenticated:
       return True
 
 class IsAdminOrReadOnly(BasePermission):
@@ -35,4 +35,5 @@ class IsAdminOrReadOnly(BasePermission):
     if request.method in SAFE_METHODS and request.user.is_authenticated:
       return True
 
-    return request.user.is_admin
+    return bool(request.user.is_authenticated and
+                request.user.is_admin == True)
