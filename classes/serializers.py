@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from class_types.serializers import TypeReadSerializer
+from stock.serializers import StockNamesSerializer
 
 from .models import Class
 
@@ -10,6 +11,7 @@ class ClassSerializer(serializers.ModelSerializer):
 
     admin = serializers.EmailField(read_only=True)
     types = TypeReadSerializer(read_only=True, many=True)
+    stock = StockNamesSerializer(read_only=True, many=True)
 
     class Meta:
         model = Class

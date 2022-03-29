@@ -23,13 +23,13 @@ class Stock(models.Model):
                 ref = item.quantity - quantity
                 if ref < 0:
                     stock_items.append(
-                        {'quantity': f'{item.quantity} {item.unit}', 'batch': item.batch})
+                        {'uuid': item.uuid, 'quantity': item.quantity, 'batch': item.batch})
                     item.quantity = 0
                     item.save()
                     quantity = -ref
                 else:
                     stock_items.append(
-                        {'quantity': f'{item.quantity - ref} {item.unit}', 'batch': item.batch})
+                        {'uuid': item.uuid, 'quantity': item.quantity - ref, 'batch': item.batch})
                     item.quantity = ref
                     item.save()
                     quantity = 0
@@ -37,12 +37,6 @@ class Stock(models.Model):
         transfered = 0
 
         for item in stock_items:
-            value = int(item['quantity'].split(' ')[0])
-            transfered += value
+            transfered += item['quantity']
 
-        data = {
-            'total_transfered': transfered,
-            'consumables': stock_items
-        }
-
-        return data
+        return stock_items

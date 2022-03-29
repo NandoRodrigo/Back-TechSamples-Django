@@ -52,3 +52,14 @@ class ConsumableListSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'stock': {'read_only': True}
         }
+
+
+class ConsumableAnalysisSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Consumable
+        fields = ['quantity', 'batch']
+
+        extra_kwargs = {
+            'batch': {'read_only': True}
+        }
