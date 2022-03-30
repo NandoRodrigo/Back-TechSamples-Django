@@ -18,8 +18,9 @@ class AnalysisSerializer(serializers.ModelSerializer):
     analyst = serializers.EmailField(read_only=True)
     class_id = serializers.UUIDField(write_only=True)
     reagents = StockAnalysisItemsSerializer(write_only=True, many=True)
-    consumed_items = serializers.ListField(
-        child=StockAnalysisItemsSerializer(many=True), read_only=True)
+    # consumed_items = serializers.ListField(
+    #     child=StockAnalysisItemsSerializer(many=True), read_only=True)
+    consumed_items = StockAnalysisItemsSerializer(read_only=True, many=True)
 
     class Meta:
         model = Analysis
@@ -53,40 +54,46 @@ class AnalysisSerializer(serializers.ModelSerializer):
 
         to_use = []
         stock = serialized['stock']
-        consumables = validated_data.pop('consumables')
+        reagents = validated_data.pop('reagents')
 
-        if len(consumables) == 0:
+        if len(reagents) == 0:
             raise NoneConsumable()
 
-        for item in consumables:
+        for item in reagents:
             if len(item) != 2:
                 raise NoneConsumable()
             try:
-                in_stock = Stock.objects.get(uuid=item['uuid'])
+                in_stock = Stock.objects.get(name=item['name'])
                 for stk in stock:
-                    if str(in_stock.uuid) == stk['uuid']:
+                    if in_stock.name == stk['name']:
                         consumable = Consumable.objects.filter(stock=in_stock)
                         total = 0
 
                         for cons in consumable:
                             total += cons.quantity
 
-                        if item['quantity'] <= total:
+                        required_qnt = item['consumables'][0]['quantity']
+
+                        if required_qnt <= total:
                             to_use.append(item)
                         else:
                             raise InsufficientQuantity()
             except ObjectDoesNotExist:
                 raise NotInStock()
 
-        if len(consumables) != len(to_use):
+        if len(reagents) != len(to_use):
             raise WrongAnalysisItem()
 
         consumable_info = []
 
-        for item in consumables:
-            stock_item = Stock.objects.get(uuid=item['uuid'])
-            info = stock_item.subtract(item['quantity'])
-            consumable_info.append(info)
+        for item in reagents:
+            stock_item = Stock.objects.get(name=item['name'])
+            required_qnt = item['consumables'][0]['quantity']
+            info = stock_item.subtract(required_qnt)
+            consumable_info.append({
+                'name': stock_item.name,
+                'consumables': info
+            })
 
         validated_data['class_data'] = serialized
         analysis = Analysis.objects.create(

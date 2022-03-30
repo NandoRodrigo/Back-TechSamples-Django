@@ -23,13 +23,13 @@ class Stock(models.Model):
                 ref = item.quantity - quantity
                 if ref < 0:
                     stock_items.append(
-                        {'uuid': item.uuid, 'quantity': item.quantity, 'batch': item.batch})
+                        {'quantity': item.quantity, 'batch': item.batch})
                     item.quantity = 0
                     item.save()
                     quantity = -ref
                 else:
                     stock_items.append(
-                        {'uuid': item.uuid, 'quantity': item.quantity - ref, 'batch': item.batch})
+                        {'quantity': item.quantity - ref, 'batch': item.batch})
                     item.quantity = ref
                     item.save()
                     quantity = 0

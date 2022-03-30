@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from tech_samples.exceptions import InvalidClassId
 from .models import Stock
-from consumables.models import Consumable
 from classes.models import Class
 from consumables.serializers import ConsumableAnalysisSerializer
 
@@ -51,7 +50,8 @@ class StockNamesSerializer(serializers.ModelSerializer):
 
 class StockAnalysisItemsSerializer(serializers.ModelSerializer):
     consumables = ConsumableAnalysisSerializer(many=True)
+    name = serializers.CharField()
 
     class Meta:
         model = Stock
-        fields = ['consumables', 'name']
+        fields = ['name', 'consumables']
