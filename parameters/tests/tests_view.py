@@ -42,7 +42,7 @@ class FeeViewTest(APITestCase):
     response = self.client.post(f'/api/classes/types/{self.new_type.uuid}/parameters/', self.new_parameter)
     
     self.assertEqual(response.status_code, 201)
-    self.assertEqual(response.json()['type']['uuid'], str(self.new_type.uuid))
+    self.assertEqual(response.json()['type'], self.new_type.name)
     
   def test_delete_parameter(self):
     self.new_parameter = Parameter.objects.create(

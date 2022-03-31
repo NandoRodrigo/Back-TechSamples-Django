@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from django.forms import ValidationError
-from class_types.serializers import TypeSerializer
+# from class_types.serializers import TypeSerializer
 from class_types.models import Type
 from .models import Parameter
 
 class ParameterSerializer(serializers.ModelSerializer):
   
-  type = TypeSerializer(read_only=True)
+  # type = TypeSerializer(read_only=True)
+  type = serializers.SlugRelatedField(read_only=True, slug_field='name')
   
   class Meta:
     model = Parameter
@@ -35,4 +36,8 @@ class ParameterSerializer(serializers.ModelSerializer):
     getParameter = Parameter.objects.filter(uuid=parameter_id).delete()
     return getParameter
   
+class ParameterReadSerializer(serializers.ModelSerializer):
     
+  class Meta:
+    model = Parameter
+    fields = ['uuid', 'name', 'minimum', 'maximum', 'result', 'unit']
