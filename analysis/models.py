@@ -11,3 +11,4 @@ class Analysis(models.Model):
   category = models.CharField(max_length=255)
   is_concluded = models.BooleanField(default=False)
   analyst = models.ForeignKey('users.User', related_name='analysis', on_delete=models.CASCADE)
+  is_approved = models.BooleanField(default=False)

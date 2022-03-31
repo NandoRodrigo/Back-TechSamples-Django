@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.forms import ValidationError
 
 from classes.serializers import ClassSerializer
+from tech_samples.exceptions import InvalidBodyContent, InvalidParameterName, InvalidResultValue, InvalidTypeName
 
 from .models import Analysis
 from classes.models import Class
@@ -40,3 +41,59 @@ class AnalysisSerializer(serializers.ModelSerializer):
     
     return Analysis.objects.create(**validated_data, analyst=self.context['request'].user)
     
+  def update(self, instance, validated_data):
+    analysis = Analysis.objects.get(uuid = instance.uuid)
+    
+    analysis_json = AnalysisSerializer(analysis).data['class_data']
+    
+    if 'class_data' not in validated_data:
+      raise InvalidBodyContent()
+    body = validated_data['class_data']
+    
+    list_of_types = [values for types in analysis_json['types'] for values in types.values()]
+    
+    list_of_parameters = [
+      values for parameters in analysis_json['types']
+      for parameter in parameters['parameters']
+      for values in parameter.values()
+    ]
+    if body['type_name'] not in list_of_types:
+      raise InvalidTypeName()
+    elif body['parameter_name'] not in list_of_parameters:
+      raise InvalidParameterName()
+  
+    for types in analysis_json['types']:
+      if types['name'] == body['type_name']:
+        for parameter in types['parameters']:
+          if parameter['name'] == body['parameter_name']:
+            parameter['result'] = body['result']
+          else:
+            raise InvalidParameterName({"error": f"parameter: {body['parameter_name']} not in type: {types['name']}"})
+    analysis.save()  
+      
+    # Mudando o is_concluded
+    for types in analysis_json['types']:
+      for parameters in types['parameters']:
+          if parameters['result'] != None:
+            analysis.is_concluded = True
+          else:
+            analysis.is_concluded = False
+            analysis.is_approved = False
+            analysis.save()
+            return analysis
+    analysis.save()
+    
+    if analysis.is_concluded:
+      for types in analysis_json['types']:
+        for parameters in types['parameters']:
+          try:
+            if int(parameters['result']) <= int(parameters['maximum']) and int(parameters['result']) >= int(parameters['minimum']):
+              analysis.is_approved = True
+            else:
+              analysis.is_approved = False
+              analysis.save()
+              return analysis
+          except:
+            raise InvalidResultValue()
+    analysis.save()
+    return analysis
