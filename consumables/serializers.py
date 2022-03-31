@@ -55,6 +55,7 @@ class ConsumableListSerializer(serializers.ModelSerializer):
 
 
 class ConsumableAnalysisSerializer(serializers.ModelSerializer):
+    quantity = serializers.IntegerField()
 
     class Meta:
         model = Consumable

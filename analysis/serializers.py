@@ -18,8 +18,6 @@ class AnalysisSerializer(serializers.ModelSerializer):
     analyst = serializers.EmailField(read_only=True)
     class_id = serializers.UUIDField(write_only=True)
     reagents = StockAnalysisItemsSerializer(write_only=True, many=True)
-    # consumed_items = serializers.ListField(
-    #     child=StockAnalysisItemsSerializer(many=True), read_only=True)
     consumed_items = StockAnalysisItemsSerializer(read_only=True, many=True)
 
     class Meta:
@@ -60,7 +58,7 @@ class AnalysisSerializer(serializers.ModelSerializer):
             raise NoneConsumable()
 
         for item in reagents:
-            if len(item) != 2:
+            if len(item['consumables']) == 0:
                 raise NoneConsumable()
             try:
                 in_stock = Stock.objects.get(name=item['name'])
@@ -96,9 +94,9 @@ class AnalysisSerializer(serializers.ModelSerializer):
             })
 
         validated_data['class_data'] = serialized
+        validated_data['consumed_items'] = consumable_info
         analysis = Analysis.objects.create(
             **validated_data, analyst=self.context['request'].user)
-        analysis.consumed_items = consumable_info
 
         return analysis
 

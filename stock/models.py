@@ -19,20 +19,21 @@ class Stock(models.Model):
         stock_items = []
 
         for item in consumables:
-            if quantity > 0:
-                ref = item.quantity - quantity
-                if ref < 0:
-                    stock_items.append(
-                        {'quantity': item.quantity, 'batch': item.batch})
-                    item.quantity = 0
-                    item.save()
-                    quantity = -ref
-                else:
-                    stock_items.append(
-                        {'quantity': item.quantity - ref, 'batch': item.batch})
-                    item.quantity = ref
-                    item.save()
-                    quantity = 0
+            if item.quantity != 0:
+                if quantity > 0:
+                    ref = item.quantity - quantity
+                    if ref < 0:
+                        stock_items.append(
+                            {'quantity': item.quantity, 'batch': item.batch})
+                        item.quantity = 0
+                        item.save()
+                        quantity = -ref
+                    else:
+                        stock_items.append(
+                            {'quantity': item.quantity - ref, 'batch': item.batch})
+                        item.quantity = ref
+                        item.save()
+                        quantity = 0
 
         transfered = 0
 
