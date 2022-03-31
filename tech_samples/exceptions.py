@@ -71,3 +71,12 @@ class InsufficientQuantity(APIException):
             "Insufficient consumable items for this analysis"
         ]
     }
+
+
+class InvalidBodyContent(APIException):
+    status_code = 400
+    default_detail = {
+        "error": [
+            "class_data key not given"
+        ]
+    }

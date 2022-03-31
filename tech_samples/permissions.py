@@ -20,7 +20,7 @@ class IsAnalyst(BasePermission):
 class IsUserCreationOrList(BasePermission):
     def has_permission(self, request, view):
 
-        if request.method == 'POST':
+        if request.method == 'POST' and request.user.is_authenticated:
             return True
 
         return bool(request.user.is_authenticated and
@@ -30,7 +30,7 @@ class IsUserCreationOrList(BasePermission):
 class IsUserUpdatePassword(BasePermission):
     def has_permission(self, request, view):
 
-        if str(request.user.uuid) in request.META['PATH_INFO']:
+        if str(request.user.uuid) in request.META['PATH_INFO'] and request.user.is_authenticated:
             return True
 
 

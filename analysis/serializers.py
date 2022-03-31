@@ -1,4 +1,3 @@
-from genericpath import exists
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
@@ -6,7 +5,7 @@ from django.forms import ValidationError
 from classes.serializers import ClassSerializer
 from consumables.models import Consumable
 from stock.serializers import StockAnalysisItemsSerializer
-from tech_samples.exceptions import InsufficientQuantity, InvalidParameterName, InvalidResultValue, InvalidTypeName, NoneConsumable, NotInStock, WrongAnalysisItem
+from tech_samples.exceptions import InvalidBodyContent, InsufficientQuantity, InvalidParameterName, InvalidResultValue, InvalidTypeName, NoneConsumable, NotInStock, WrongAnalysisItem
 
 from .models import Analysis
 from classes.models import Class
@@ -104,18 +103,23 @@ class AnalysisSerializer(serializers.ModelSerializer):
         analysis = Analysis.objects.get(uuid=instance.uuid)
 
         analysis_json = AnalysisSerializer(analysis).data['class_data']
+
+        if 'class_data' not in validated_data:
+            raise InvalidBodyContent()
         body = validated_data['class_data']
 
         list_of_types = [values for types in analysis_json['types']
                          for values in types.values()]
+
         list_of_parameters = [
             values for parameters in analysis_json['types']
             for parameter in parameters['parameters']
             for values in parameter.values()
         ]
+
         if body['type_name'] not in list_of_types:
             raise InvalidTypeName()
-        elif body['parameter_name'] not in list_of_parameters:
+        if body['parameter_name'] not in list_of_parameters:
             raise InvalidParameterName()
 
         for types in analysis_json['types']:
@@ -123,9 +127,12 @@ class AnalysisSerializer(serializers.ModelSerializer):
                 for parameter in types['parameters']:
                     if parameter['name'] == body['parameter_name']:
                         parameter['result'] = body['result']
+                    # else:
+                    #     raise InvalidParameterName(
+                    #         {"error": f"parameter: {body['parameter_name']} not in type: {types['name']}"})
+
         analysis.save()
 
-        # Mudando o is_concluded
         for types in analysis_json['types']:
             for parameters in types['parameters']:
                 if parameters['result'] != None:
@@ -136,6 +143,7 @@ class AnalysisSerializer(serializers.ModelSerializer):
                     analysis.save()
                     return analysis
         analysis.save()
+
         if analysis.is_concluded:
             for types in analysis_json['types']:
                 for parameters in types['parameters']:
